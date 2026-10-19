@@ -180,8 +180,17 @@ const resumeFiles = {
   }
 };
 
+function readSavedLanguage() {
+  try {
+    const saved = localStorage.getItem("language");
+    return saved === "pt" || saved === "en" ? saved : "pt";
+  } catch {
+    return "pt";
+  }
+}
+
 const state = {
-  language: localStorage.getItem("language") || "pt"
+  language: readSavedLanguage()
 };
 
 const html = document.documentElement;
@@ -191,8 +200,13 @@ const panels = document.querySelectorAll("[role='tabpanel']");
 const resumeDownloads = document.querySelectorAll("[data-resume-download]");
 
 function applyLanguage(language) {
+  if (language !== "pt" && language !== "en") return;
   state.language = language;
-  localStorage.setItem("language", language);
+  try {
+    localStorage.setItem("language", language);
+  } catch {
+    // Storage may be unavailable; the language switch still works for this page.
+  }
   html.lang = language === "pt" ? "pt-BR" : "en";
   document.title = language === "pt"
     ? "Livia Fazolato | Currículo e Portfólio"
